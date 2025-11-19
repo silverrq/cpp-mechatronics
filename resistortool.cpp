@@ -20,6 +20,7 @@ HANDLE hConsole;
 
 using namespace std;
 
+// Ekran temizleme fonksiyonu
 void clr() {
 
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -36,6 +37,8 @@ void clr() {
     SetConsoleCursorPosition(hOut, {0,0});
 }
 
+
+// renkler
 inline void black()    { SetConsoleTextAttribute(hConsole, 0);}
 
 inline void white()    { SetConsoleTextAttribute(hConsole,
@@ -64,6 +67,7 @@ inline void orange()   { SetConsoleTextAttribute(hConsole,
                         FOREGROUND_RED | FOREGROUND_GREEN); }
 inline void reset()    { SetConsoleTextAttribute(hConsole, 0); }
 
+// yavaş yazma efekti
 void ws(const string& text, int delay_ms = 5) {
     for (char karakter : text) {
 
@@ -76,6 +80,7 @@ void ws(const string& text, int delay_ms = 5) {
     }
 }
 
+// enter girdisi bekleme
 void waitForEnter() {
     while (_kbhit()) {
         _getch();
@@ -88,10 +93,13 @@ void waitForEnter() {
     }
 }
 
+// bekle
 void wait(int ms = 1000) {
     this_thread::sleep_for(chrono::milliseconds(ms));
 }
 
+
+// gelen girdiyi okuyup tuş tespiti yapma
 int readKey() {
     int key = _getch();
     if (key == 224) {
@@ -104,6 +112,7 @@ int readKey() {
     return UNKNOWN;
 }
 
+// Girilen girdi ESC ise true değilse false döndür
 bool escapeCheck() {
     if (_kbhit()) {
         int key = _getch();
@@ -113,6 +122,7 @@ bool escapeCheck() {
     return false;
 }
 
+// Menü
 void menu(int selected) {
     clr();
     gray();
@@ -151,6 +161,7 @@ void menu(int selected) {
     reset();
 }
 
+// Menü fonksiyonu
 int arrowKeyMenu() {
     int selected = 0;
     int max = 4;
@@ -164,6 +175,7 @@ int arrowKeyMenu() {
     }
 }
 
+// Rehber
 void information(int bandcount) {
     gray();
     cout << "\n" << bandcount << " Band Resistor Calculator\n" << endl;
@@ -207,6 +219,7 @@ void information(int bandcount) {
     waitForEnter();
 }
 
+// MAPLER
 map<string, int> digitMap = {
     {"black", 0},{"brown", 1},{"red", 2},{"orange", 3},{"yellow", 4},
     {"green", 5},{"blue", 6},{"purple", 7}, {"violet", 7}, {"gray", 8},{"white", 9},
@@ -230,6 +243,8 @@ map<string, int> tempmap = {
     {"green", 20},{"blue", 10},{"purple", 5}, {"violet", 5},{"gray", 1},{"white", 0}
 };
 
+
+// Program sonu
 bool end() {
     green(); ws("\nPress Enter to return main menu |"); reset(); red(); ws(" ESC to Exit..."); reset();
     while (true) {
@@ -246,6 +261,8 @@ bool end() {
     }
 }
 
+// Renk girdisi sırasında her bir harfi kontrol eden,
+// Hatalı girdide tekrar girdiren ve girilen harfleri küçülten fonksiyon
 template<typename T>
 bool getBandInput(string& input, const map<string, T>& mp) {
     input.clear();
@@ -282,13 +299,13 @@ bool getBandInput(string& input, const map<string, T>& mp) {
             }
         }
         else {
-            input.push_back(tolower(key));
+            input.push_back(tolower(key)); // Küçük Harfe Çevirme
             cout << (char)tolower(key);
         }
     }
 }
 
-
+// Büyüklükler
 const double GIGA = 1000000000.0;
 const double MEGA = 1000000.0;
 const double KILO = 1000.0;
@@ -312,13 +329,14 @@ string format(double value) {
         unit = " kΩ";
     }
 
-    double rounded = round(displayValue * 1000.0) / 1000.0;
+    double rounded = round(displayValue * 1000.0) / 1000.0; // Yuvarlama
     string s = to_string(rounded);
     s.erase(s.find_last_not_of('0') + 1, string::npos);
     if (!s.empty() && s.back() == '.') s.pop_back();
     return s + unit;
 }
 
+// Direncin bant rengini sembolize etmek için gerekli kontroller ve çıktılar
 void printBand(string color) {
     if(color == "black") black();
     else if(color == "brown") brown();
@@ -341,6 +359,7 @@ void printBand(string color) {
     reset();
 }
 
+// Ayırıcı
 void inputHeader(int bandCount) {
     blue(); cout << "\n   "; cout << bandCount; reset(); white(); cout << " Band Resistor\n"; reset();
     white(); cout << "────────────────────────────────────────\n"; reset();
@@ -348,12 +367,13 @@ void inputHeader(int bandCount) {
 
 int main() {
 
+    // Renk isimli fonksiyonlar textleri boyamak için kullanılıyor
 
-    SetConsoleOutputCP(65001);
+    SetConsoleOutputCP(65001); // UTF-8
     SetConsoleCP(65001);
 
     hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
+    // Font değiştirme, UI renklendirme vs.
     CONSOLE_FONT_INFOEX cfi;
     cfi.cbSize = sizeof(CONSOLE_FONT_INFOEX);
     cfi.nFont = 0;
@@ -365,7 +385,7 @@ int main() {
     SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &cfi);
 
 
-    string b1, b2, b3, b4, b5, b6;
+    string b1, b2, b3, b4, b5, b6; // Bant değişkenleri
 
     clr();
     blue();
